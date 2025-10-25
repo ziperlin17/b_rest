@@ -1,0 +1,99 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1-create-users
+      author: bank-rest
+      changes:
+        - createTable:
+            tableName: users
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column: { name: username, type: "VARCHAR(255)", constraints: { unique: true, nullable: false } }
+              - column: { name: password, type: "VARCHAR(255)", constraints: { nullable: false } }
+              - column: { name: is_account_non_expired, type: BOOLEAN, defaultValueBoolean: true, constraints: { nullable: false } }
+              - column: { name: is_account_non_locked, type: BOOLEAN, defaultValueBoolean: true, constraints: { nullable: false } }
+              - column: { name: is_credentials_non_expired, type: BOOLEAN, defaultValueBoolean: true, constraints: { nullable: false } }
+              - column: { name: is_enabled, type: BOOLEAN, defaultValueBoolean: true, constraints: { nullable: false } }
+
+  - changeSet:
+      id: 1-create-roles
+      author: bank-rest
+      changes:
+        - createTable:
+            tableName: roles
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: VARCHAR(20)
+                  constraints:
+                    unique: true
+                    nullable: false
+
+  - changeSet:
+      id: 1-create-user-roles-join
+      author: bank-rest
+      changes:
+        - createTable:
+            tableName: user_roles
+            columns:
+              - column: { name: user_id, type: BIGINT, constraints: { nullable: false } }
+              - column: { name: role_id, type: BIGINT, constraints: { nullable: false } }
+        - addForeignKeyConstraint:
+            baseTableName: user_roles
+            baseColumnNames: user_id
+            constraintName: fk_user_roles_user
+            referencedTableName: users
+            referencedColumnNames: id
+        - addForeignKeyConstraint:
+            baseTableName: user_roles
+            baseColumnNames: role_id
+            constraintName: fk_user_roles_role
+            referencedTableName: roles
+            referencedColumnNames: id
+
+  - changeSet:
+      id: 001-create-cards
+      author: bank-rest
+      changes:
+        - createTable:
+            tableName: cards
+            columns:
+              - column: { name: id, type: BIGINT, autoIncrement: true, constraints: { primaryKey: true, nullable: false } }
+              - column: { name: card_number, type: "VARCHAR(255)", constraints: { unique: true, nullable: false } }
+              - column: { name: expiration_date, type: "DATE", constraints: { nullable: false } }
+              - column: { name: cvv, type: "VARCHAR(255)", constraints: { nullable: false } }
+              - column: { name: status, type: "VARCHAR(50)", constraints: { nullable: false } }
+              - column: { name: balance, type: "DECIMAL(19, 4)", constraints: { nullable: false } }
+              - column: { name: user_id, type: BIGINT, constraints: { nullable: false } }
+              - column: { name: created_at, type: "TIMESTAMP WITH TIME ZONE", constraints: { nullable: false } }
+              - column: { name: updated_at, type: "TIMESTAMP WITH TIME ZONE", constraints: { nullable: false } }
+        - addForeignKeyConstraint:
+            baseTableName: cards
+            baseColumnNames: user_id
+            constraintName: fk_cards_user
+            referencedTableName: users
+            referencedColumnNames: id
+  - changeSet:
+      id: 2-insert-roles
+      author: bank-rest
+      changes:
+        - insert:
+            tableName: roles
+            columns:
+              - column: { name: name, value: "ROLE_USER" }
+        - insert:
+            tableName: roles
+            columns:
+              - column: { name: name, value: "ROLE_ADMIN" }
