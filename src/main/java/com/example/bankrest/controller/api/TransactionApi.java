@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Tag(name = "Transaction API", description = "APIs for performing financial transactions")
-@RequestMapping("/api/v1/transactions")
+@RequestMapping("/v1/transactions")
 @SecurityRequirement(name = "bearerAuth")
 public interface TransactionApi {
 

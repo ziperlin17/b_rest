@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.UUID;
 
 @Tag(name = "Admin: Card Management API", description = "APIs for administrators to manage any card")
-@RequestMapping("/api/v1/admin/cards")
+@RequestMapping("/v1/admin/cards")
 @SecurityRequirement(name = "bearerAuth")
 @PreAuthorize("hasRole('ADMIN')")
 public interface AdminCardApi {

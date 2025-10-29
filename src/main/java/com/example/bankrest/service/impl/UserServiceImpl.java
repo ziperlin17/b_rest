@@ -59,7 +59,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional(readOnly = true)
     public UserResponseDto getUserProfileById(Long id) {
-        return userRepository.findById(id)
+        return userRepository.findByIdWithRoles(id)
                 .map(userMapper::toUserResponseDto)
                 .orElseThrow(() -> new ResourceNotFoundException("User with id " + id + " not found."));
     }
@@ -67,7 +67,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional(readOnly = true)
     public Page<UserResponseDto> getAllUsers(Pageable pageable) {
-        Page<User> userPage = userRepository.findAll(pageable);
+        Page<User> userPage = userRepository.findAllWithRoles(pageable); // <-- НОВЫЙ МЕТОД
         log.info("IN getAllUsers - successfully retrieved {} users.", userPage.getTotalElements());
         return userPage.map(userMapper::toUserResponseDto);
     }

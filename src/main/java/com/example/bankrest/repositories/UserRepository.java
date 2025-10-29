@@ -3,6 +3,10 @@ package com.example.bankrest.repositories;
 import com.example.bankrest.entities.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Page;
+
 
 import java.util.Optional;
 
@@ -16,4 +20,15 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByPhoneNumber(String phoneNumber);
 
     boolean existsByPhoneNumber(String phoneNumber);
+
+    @Query("SELECT u FROM User u JOIN FETCH u.roles WHERE u.email = :email")
+    Optional<User> findByEmailWithRoles(String email);
+
+    @Query("SELECT u FROM User u JOIN FETCH u.roles WHERE u.id = :id")
+    Optional<User> findByIdWithRoles(Long id);
+
+    @Query(value = "SELECT u FROM User u JOIN FETCH u.roles",
+            countQuery = "SELECT count(u) FROM User u")
+    Page<User> findAllWithRoles(Pageable pageable);
+
 }

@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.UUID;
 
 @Tag(name = "Card Management API", description = "APIs for creating, viewing, and managing bank cards")
-@RequestMapping("/api/v1/cards")
+@RequestMapping("/v1/cards")
 @SecurityRequirement(name = "bearerAuth")
 public interface CardApi {
 

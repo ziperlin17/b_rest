@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import java.util.List;
 
 @Tag(name = "Account Management API", description = "APIs for creating and viewing bank accounts")
-@RequestMapping("/api/v1/accounts")
+@RequestMapping("/v1/accounts")
 @SecurityRequirement(name = "bearerAuth")
 public interface AccountApi {
 

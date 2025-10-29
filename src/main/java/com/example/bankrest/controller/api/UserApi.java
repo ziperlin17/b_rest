@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Tag(name = "User Management API", description = "APIs for managing user profiles")
-@RequestMapping("/api/v1/users")
+@RequestMapping("/v1/users")
 @SecurityRequirement(name = "bearerAuth")
 public interface UserApi {
 

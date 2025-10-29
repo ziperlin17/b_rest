@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.UUID;
 
 @Tag(name = "Admin: User Management API", description = "APIs for administrators to manage users")
-@RequestMapping("/api/v1/admin/users")
+@RequestMapping("/v1/admin/users")
 @SecurityRequirement(name = "bearerAuth")
 @PreAuthorize("hasRole('ADMIN')")
 public interface AdminUserApi {

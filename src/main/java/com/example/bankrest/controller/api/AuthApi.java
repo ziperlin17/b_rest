@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Tag(name = "Authentication API", description = "APIs for user registration and login")
-@RequestMapping("/api/v1/auth")
+@RequestMapping("/v1/auth")
 public interface AuthApi {
 
     @Operation(summary = "Register a new user",
