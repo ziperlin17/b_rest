@@ -1,0 +1,28 @@
+databaseChangeLog:
+  - changeSet:
+      id: 2-1-insert-initial-roles
+      author: bank-rest-dev
+      changes:
+        - insert:
+            tableName: roles
+            columns:
+              - column: { name: name, value: "ROLE_USER" }
+        - insert:
+            tableName: roles
+            columns:
+              - column: { name: name, value: "ROLE_ADMIN" }
+
+  - changeSet:
+      id: 2-2-insert-initial-card-products
+      author: bank-rest-dev
+      changes:
+        - insert:
+            tableName: card_products
+            columns:
+              - column: { name: product_name, value: "Visa Classic" }
+              - column: { name: payment_system, value: "VISA" }
+        - insert:
+            tableName: card_products
+            columns:
+              - column: { name: product_name, value: "Mastercard Ultra Pro Max+-" }
+              - column: { name: payment_system, value: "MASTERCARD" }

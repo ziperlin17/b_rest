@@ -1,0 +1,130 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1-1-create-users-table
+      author: bank-rest-dev
+      changes:
+        - createTable:
+            tableName: users
+            columns:
+              - column: { name: id, type: BIGINT, autoIncrement: true, constraints: { primaryKey: true, nullable: false } }
+              - column: { name: email, type: "VARCHAR(255)", constraints: { unique: true, nullable: false } }
+              - column: { name: phone_number, type: "VARCHAR(50)", constraints: { unique: true, nullable: false } }
+              - column: { name: first_name, type: "VARCHAR(100)", constraints: { nullable: false } }
+              - column: { name: last_name, type: "VARCHAR(100)", constraints: { nullable: false } }
+              - column: { name: password, type: "VARCHAR(255)", constraints: { nullable: false } }
+              - column: { name: status, type: "VARCHAR(50)", defaultValue: "ACTIVE", constraints: { nullable: false } }
+              - column: { name: created_at, type: "TIMESTAMP WITH TIME ZONE", defaultValueComputed: "CURRENT_TIMESTAMP", constraints: { nullable: false } }
+              - column: { name: updated_at, type: "TIMESTAMP WITH TIME ZONE", defaultValueComputed: "CURRENT_TIMESTAMP", constraints: { nullable: false } }
+
+  - changeSet:
+      id: 1-2-create-roles-and-join-table
+      author: bank-rest-dev
+      changes:
+        - createTable:
+            tableName: roles
+            columns:
+              - column: { name: id, type: BIGINT, autoIncrement: true, constraints: { primaryKey: true, nullable: false } }
+              - column: { name: name, type: "VARCHAR(20)", constraints: { unique: true, nullable: false } }
+        - createTable:
+            tableName: user_roles
+            columns:
+              - column: { name: user_id, type: BIGINT, constraints: { nullable: false } }
+              - column: { name: role_id, type: BIGINT, constraints: { nullable: false } }
+        - addPrimaryKey:
+            tableName: user_roles
+            columnNames: user_id, role_id
+            constraintName: pk_user_roles
+        - addForeignKeyConstraint:
+            baseTableName: user_roles
+            baseColumnNames: user_id
+            constraintName: fk_user_roles_users
+            referencedTableName: users
+            referencedColumnNames: id
+        - addForeignKeyConstraint:
+            baseTableName: user_roles
+            baseColumnNames: role_id
+            constraintName: fk_user_roles_roles
+            referencedTableName: roles
+            referencedColumnNames: id
+
+  - changeSet:
+      id: 1-3-create-card-products-table
+      author: bank-rest-dev
+      changes:
+        - createTable:
+            tableName: card_products
+            columns:
+              - column: { name: id, type: BIGINT, autoIncrement: true, constraints: { primaryKey: true, nullable: false } }
+              - column: { name: product_name, type: "VARCHAR(255)", constraints: { unique: true, nullable: false } }
+              - column: { name: payment_system, type: "VARCHAR(100)", constraints: { nullable: false } }
+
+  - changeSet:
+      id: 1-4-create-accounts-table
+      author: bank-rest-dev
+      changes:
+        - createTable:
+            tableName: accounts
+            columns:
+              - column: { name: id, type: BIGINT, autoIncrement: true, constraints: { primaryKey: true, nullable: false } }
+              - column: { name: uuid, type: "UUID", constraints: { unique: true, nullable: false } }
+              - column: { name: account_number, type: "VARCHAR(255)", constraints: { unique: true, nullable: false } }
+              - column: { name: balance, type: "DECIMAL(19, 4)", constraints: { nullable: false } }
+              - column: { name: currency, type: "VARCHAR(3)", constraints: { nullable: false } }
+              - column: { name: user_id, type: BIGINT, constraints: { nullable: false } }
+              - column: { name: created_at, type: "TIMESTAMP WITH TIME ZONE", defaultValueComputed: "CURRENT_TIMESTAMP", constraints: { nullable: false } }
+              - column: { name: updated_at, type: "TIMESTAMP WITH TIME ZONE", defaultValueComputed: "CURRENT_TIMESTAMP", constraints: { nullable: false } }
+        - addForeignKeyConstraint:
+            baseTableName: accounts
+            baseColumnNames: user_id
+            constraintName: fk_accounts_users
+            referencedTableName: users
+            referencedColumnNames: id
+
+  - changeSet:
+      id: 1-5-create-cards-table
+      author: bank-rest-dev
+      changes:
+        - createTable:
+            tableName: cards
+            columns:
+              - column: { name: id, type: BIGINT, autoIncrement: true, constraints: { primaryKey: true, nullable: false } }
+              - column: { name: uuid, type: "UUID", constraints: { unique: true, nullable: false } }
+              - column: { name: card_number_encrypted, type: "VARCHAR(255)", constraints: { unique: true, nullable: false } }
+              - column: { name: cardholder_name, type: "VARCHAR(255)", constraints: { nullable: false } }
+              - column: { name: expiration_date, type: "DATE", constraints: { nullable: false } }
+              - column: { name: cvv_encrypted, type: "VARCHAR(255)", constraints: { nullable: false } }
+              - column: { name: status, type: "VARCHAR(50)", constraints: { nullable: false } }
+              - column: { name: account_id, type: BIGINT, constraints: { nullable: false } }
+              - column: { name: card_product_id, type: BIGINT, constraints: { nullable: false } }
+              - column: { name: created_at, type: "TIMESTAMP WITH TIME ZONE", defaultValueComputed: "CURRENT_TIMESTAMP", constraints: { nullable: false } }
+              - column: { name: updated_at, type: "TIMESTAMP WITH TIME ZONE", defaultValueComputed: "CURRENT_TIMESTAMP", constraints: { nullable: false } }
+        - addForeignKeyConstraint:
+            baseTableName: cards
+            baseColumnNames: account_id
+            constraintName: fk_cards_accounts
+            referencedTableName: accounts
+            referencedColumnNames: id
+        - addForeignKeyConstraint:
+            baseTableName: cards
+            baseColumnNames: card_product_id
+            constraintName: fk_cards_card_products
+            referencedTableName: card_products
+            referencedColumnNames: id
+
+  - changeSet:
+      id: 001-6-create-refresh-tokens-table
+      author: bank-rest-dev
+      changes:
+        - createTable:
+            tableName: refresh_tokens
+            columns:
+              - column: { name: id, type: BIGINT, autoIncrement: true, constraints: { primaryKey: true, nullable: false } }
+              - column: { name: user_id, type: BIGINT, constraints: { unique: true, nullable: false } } # Один пользователь - одна запись
+              - column: { name: token, type: "VARCHAR(255)", constraints: { unique: true, nullable: false } }
+              - column: { name: expiry_date, type: "TIMESTAMP WITH TIME ZONE", constraints: { nullable: false } }
+        - addForeignKeyConstraint:
+            baseTableName: refresh_tokens
+            baseColumnNames: user_id
+            constraintName: fk_refresh_tokens_users
+            referencedTableName: users
+            referencedColumnNames: id
