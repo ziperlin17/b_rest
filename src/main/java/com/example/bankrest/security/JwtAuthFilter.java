@@ -1,5 +1,6 @@
 package com.example.bankrest.security;
 
+import com.example.bankrest.util.JwtUtils;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -21,14 +22,12 @@ import java.util.Optional;
 public class JwtAuthFilter extends OncePerRequestFilter {
 
     private final JwtTokenProvider jwtTokenProvider;
-    private static final String BEARER_PREFIX = "Bearer ";
-
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request,
                                     @NonNull HttpServletResponse response,
                                     @NonNull FilterChain filterChain) throws ServletException, IOException {
         log.debug("Processing request to: {}", request.getRequestURI());
-        Optional<String> tokenOptional = extractToken(request);
+        var tokenOptional = JwtUtils.extractToken(request);
 
         if (tokenOptional.isPresent()) {
             String token = tokenOptional.get();
@@ -39,13 +38,5 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         }
 
         filterChain.doFilter(request, response);
-    }
-
-    private Optional<String> extractToken(HttpServletRequest request) {
-        String header = request.getHeader(HttpHeaders.AUTHORIZATION);
-        if (header != null && header.startsWith(BEARER_PREFIX)) {
-            return Optional.of(header.substring(BEARER_PREFIX.length()));
-        }
-        return Optional.empty();
     }
 }

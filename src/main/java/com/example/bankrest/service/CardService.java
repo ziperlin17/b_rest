@@ -2,6 +2,7 @@ package com.example.bankrest.service;
 
 import com.example.bankrest.dto.CardResponseDto;
 import com.example.bankrest.dto.CreateCardRequestDto;
+import com.example.bankrest.entities.enums.CardStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -14,4 +15,5 @@ public interface CardService {
     void blockCard(UUID cardUuid, UserDetails currentUserDetails);
     Page<CardResponseDto> getAllCards(Long userIdFilter, Pageable pageable);
     void deleteCard(UUID cardUuid);
+    CardResponseDto updateCardStatus(UUID cardUuid, CardStatus newStatus);
 }

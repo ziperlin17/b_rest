@@ -11,6 +11,7 @@ import com.example.bankrest.security.UserDetailsImpl;
 import com.example.bankrest.service.AuthService;
 import com.example.bankrest.service.RefreshTokenService;
 import com.example.bankrest.service.UserService;
+import com.example.bankrest.util.JwtUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -62,7 +63,7 @@ public class AuthServiceImpl implements AuthService {
     @Override
     @Transactional
     public LoginResponseDto refreshToken(HttpServletRequest request) {
-        String requestRefreshToken = extractToken(request)
+        String requestRefreshToken = JwtUtils.extractToken(request)
                 .orElseThrow(() -> new AuthException("Refresh token is missing."));
 
         return refreshTokenService.findByToken(requestRefreshToken)
@@ -76,14 +77,5 @@ public class AuthServiceImpl implements AuthService {
                     return new LoginResponseDto(newAccessToken, newRefreshToken.getToken());
                 })
                 .orElseThrow(() -> new AuthException("Refresh token not found in database."));
-    }
-
-    private Optional<String> extractToken(HttpServletRequest request) {
-        final String bearerPrefix = "Bearer ";
-        String header = request.getHeader(HttpHeaders.AUTHORIZATION);
-        if (header != null && header.startsWith(bearerPrefix)) {
-            return Optional.of(header.substring(bearerPrefix.length()));
-        }
-        return Optional.empty();
     }
 }

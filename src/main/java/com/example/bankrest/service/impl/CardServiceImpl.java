@@ -127,5 +127,18 @@ public class CardServiceImpl implements CardService {
         cardRepository.delete(card);
         log.info("IN deleteCard - Card with UUID {} was deleted by an admin", cardUuid);
     }
+
+    @Override
+    @Transactional
+    public CardResponseDto updateCardStatus(UUID cardUuid, CardStatus newStatus) {
+        Card card = cardRepository.findByUuid(cardUuid)
+                .orElseThrow(() -> new ResourceNotFoundException("Card not found with UUID: " + cardUuid));
+
+        card.setStatus(newStatus);
+        Card savedCard = cardRepository.save(card);
+
+        log.info("IN updateCardStatus - Status of card {} changed to {} by admin", cardUuid, newStatus);
+        return cardMapper.toCardResponseDto(savedCard);
+    }
 }
 

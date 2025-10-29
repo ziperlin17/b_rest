@@ -1,10 +1,12 @@
 package com.example.bankrest.controller.api;
 
 import com.example.bankrest.dto.CardResponseDto;
+import com.example.bankrest.dto.CardStatusUpdateRequestDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -34,5 +36,13 @@ public interface AdminCardApi {
     @DeleteMapping("/{uuid}")
     ResponseEntity<Void> deleteCard(
             @Parameter(description = "UUID of the card to delete") @PathVariable("uuid") UUID cardUuid
+    );
+
+    @Operation(summary = "Update a card's status",
+            description = "Allows an admin to change the status of any card (e.g., ACTIVE, BLOCKED).")
+    @PatchMapping("/{uuid}/status")
+    ResponseEntity<CardResponseDto> updateCardStatus(
+            @Parameter(description = "UUID карты для обновления") @PathVariable("uuid") UUID cardUuid,
+            @Valid @RequestBody CardStatusUpdateRequestDto statusUpdateDto
     );
 }

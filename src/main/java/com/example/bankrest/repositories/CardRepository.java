@@ -2,6 +2,7 @@ package com.example.bankrest.repositories;
 
 import com.example.bankrest.entities.Card;
 import com.example.bankrest.entities.User;
+import com.example.bankrest.entities.enums.CardStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -19,4 +20,5 @@ public interface CardRepository extends JpaRepository<Card, Long> {
     boolean existsByCardNumber(String cardNumber);
     Optional<Card> findByCardNumber(String cardNumber);
     Page<Card> findByAccount_User_Id(Long userId, Pageable pageable);
+    boolean existsByAccountAndStatus(Account account, CardStatus status);
 }
