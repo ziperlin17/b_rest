@@ -10,7 +10,7 @@ spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/bank_db
     username: postgres
-    password: ${DB_PASSWORD:postgres}
+    password: ${DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
 
   jpa:
@@ -33,7 +33,7 @@ springdoc:
 app:
   security:
     jwt:
-      secret: ${JWT_SECRET:bezopasno-klanus-klanus-klanus22}
+      secret: ${JWT_SECRET}
   encryption:
     aes:
-      key: ${ENCRYPTION_KEY:bezopasno-klanus-klanus-klanus11}
+      key: ${ENCRYPTION_KEY}

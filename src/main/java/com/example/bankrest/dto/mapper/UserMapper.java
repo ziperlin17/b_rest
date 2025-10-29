@@ -17,7 +17,7 @@ public interface UserMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "status", ignore = true)
     @Mapping(target = "roles", ignore = true)
-    @Mapping(target = "cards", ignore = true)
+    @Mapping(target = "accounts", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
     User toUser(UserRegistrationDto registrationDto);
