@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 import java.util.Date;
+import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
@@ -39,6 +40,7 @@ public class JwtTokenProvider {
                 .subject(userDetails.getUsername())
                 .issuedAt(now)
                 .expiration(validity)
+                .id(UUID.randomUUID().toString())
                 .signWith(secretKey)
                 .compact();
     }

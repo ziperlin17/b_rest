@@ -13,6 +13,8 @@ import com.example.bankrest.repositories.CardRepository;
 import com.example.bankrest.repositories.UserRepository;
 import com.example.bankrest.service.AccountGenerationService;
 import com.example.bankrest.service.AccountService;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.LockModeType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.AccessDeniedException;
@@ -33,6 +35,8 @@ public class AccountServiceImpl implements AccountService {
     private final AccountGenerationService accountGenerationService;
     private final AccountMapper accountMapper;
     private final CardRepository cardRepository;
+    private final EntityManager entityManager;
+
 
     @Override
     @Transactional
@@ -77,8 +81,15 @@ public class AccountServiceImpl implements AccountService {
     @Override
     @Transactional
     public void closeAccount(UUID uuid, Long userId) {
-        Account account = accountRepository.findByUuid(uuid)
+        Long accountId = accountRepository.findByUuid(uuid)
+                .map(Account::getId)
                 .orElseThrow(() -> new ResourceNotFoundException("Account not found with UUID: " + uuid));
+
+        Account account = entityManager.find(Account.class, accountId, LockModeType.PESSIMISTIC_WRITE);
+
+        if (account == null) {
+            throw new ResourceNotFoundException("Account not found with UUID: " + uuid);
+        }
 
         if (!account.getUser().getId().equals(userId)) {
             log.warn("IN closeAccount - User {} attempted to close account {} owned by {}", userId, uuid, account.getUser().getId());
