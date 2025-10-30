@@ -6,12 +6,13 @@ import com.example.bankrest.exception.AuthException;
 import com.example.bankrest.repositories.RefreshTokenRepository;
 import com.example.bankrest.service.RefreshTokenService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
-
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class RefreshTokenServiceImpl implements RefreshTokenService {
@@ -22,12 +23,22 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
     @Override
     @Transactional
     public RefreshToken createRefreshToken(User user) {
-        refreshTokenRepository.findByUser(user).ifPresent(refreshTokenRepository::delete);
-        RefreshToken refreshToken = RefreshToken.builder()
-                .user(user)
-                .token(UUID.randomUUID().toString())
-                .expiryDate(Instant.now().plusMillis(jwtProperties.refreshTokenExpirationMs()))
-                .build();
+        Optional<RefreshToken> existingTokenOpt = refreshTokenRepository.findByUser(user);
+
+        RefreshToken refreshToken;
+        if (existingTokenOpt.isPresent()) {
+            refreshToken = existingTokenOpt.get();
+            refreshToken.setToken(UUID.randomUUID().toString());
+            refreshToken.setExpiryDate(Instant.now().plusMillis(jwtProperties.refreshTokenExpirationMs()));
+            log.debug("IN createRefreshToken - Updating existing token for user {}", user.getEmail());
+        } else {
+            refreshToken = RefreshToken.builder()
+                    .user(user)
+                    .token(UUID.randomUUID().toString())
+                    .expiryDate(Instant.now().plusMillis(jwtProperties.refreshTokenExpirationMs()))
+                    .build();
+            log.debug("IN createRefreshToken - Creating new token for user {}", user.getEmail());
+        }
         return refreshTokenRepository.save(refreshToken);
     }
     @Override

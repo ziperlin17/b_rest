@@ -5,6 +5,8 @@ import com.example.bankrest.dto.CreateCardRequestDto;
 import com.example.bankrest.exception.dto.ErrorResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -33,11 +35,23 @@ public interface CardApi {
             @ApiResponse(responseCode = "200", description = "Successfully retrieved list of cards"),
             @ApiResponse(responseCode = "401", description = "Unauthorized")
     })
+    @Parameters({
+            @Parameter(name = "page", description = "Page number (0..N)",
+                    example = "0", schema = @Schema(type = "integer", defaultValue = "0")),
+
+            @Parameter(name = "size", description = "Element quantity",
+                    example = "10", schema = @Schema(type = "integer", defaultValue = "10")),
+
+            @Parameter(name = "sort",
+                    description = "Sorting. property,direction (e.g., createdAt,desc)",
+                    example = "asc",
+                    array = @ArraySchema(schema = @Schema(type = "string", defaultValue = "asc")))
+    })
     @GetMapping
     @PreAuthorize("hasRole('USER')")
     ResponseEntity<Page<CardResponseDto>> getCurrentUserCards(
             Authentication authentication,
-            @Parameter(description = "Pagination and sorting information")
+            @Parameter(hidden = true)
             @PageableDefault(size = 10, sort = "createdAt") Pageable pageable
     );
 

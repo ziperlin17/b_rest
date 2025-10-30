@@ -24,18 +24,33 @@ public class TransactionServiceImpl implements TransactionService {
     @Override
     @Transactional
     public void transferFunds(TransferRequestDto transferDto, Long userId) {
-        Account fromAccount = accountRepository.findWithLockingByUuid(transferDto.getFromAccountUuid())
+        Account fromAccountInitial = accountRepository.findByUuid(transferDto.getFromAccountUuid())
                 .orElseThrow(() -> new ResourceNotFoundException("Source account not found with UUID: " + transferDto.getFromAccountUuid()));
 
-        if (!fromAccount.getUser().getId().equals(userId)) {
+        Account toAccountInitial = accountRepository.findByAccountNumber(transferDto.getToAccountNumber())
+                .orElseThrow(() -> new ResourceNotFoundException("Destination account not found with number: " + transferDto.getToAccountNumber()));
+
+        if (!fromAccountInitial.getUser().getId().equals(userId)) {
             throw new AccessDeniedException("You do not own the source account.");
         }
 
-        Account toAccount = accountRepository.findByAccountNumber(transferDto.getToAccountNumber())
-                .orElseThrow(() -> new ResourceNotFoundException("Destination account not found with number: " + transferDto.getToAccountNumber()));
-
-        if (fromAccount.getId().equals(toAccount.getId())) {
+        if (fromAccountInitial.getId().equals(toAccountInitial.getId())) {
             throw new BadRequestException("Source and destination accounts cannot be the same.");
+        }
+
+        Account fromAccount;
+        Account toAccount;
+
+        if (fromAccountInitial.getId() < toAccountInitial.getId()) {
+            fromAccount = accountRepository.findWithLockingById(fromAccountInitial.getId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Source account not found with ID: " + fromAccountInitial.getId()));
+            toAccount = accountRepository.findWithLockingById(toAccountInitial.getId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Destination account not found with ID: " + toAccountInitial.getId()));
+        } else {
+            toAccount = accountRepository.findWithLockingById(toAccountInitial.getId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Destination account not found with ID: " + toAccountInitial.getId()));
+            fromAccount = accountRepository.findWithLockingById(fromAccountInitial.getId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Source account not found with ID: " + fromAccountInitial.getId()));
         }
 
         if (fromAccount.getBalance().compareTo(transferDto.getAmount()) < 0) {
@@ -54,6 +69,5 @@ public class TransactionServiceImpl implements TransactionService {
 
         log.info("IN transferFunds - Successfully transferred {} {} from account {} to account {}",
                 transferDto.getAmount(), transferDto.getCurrency(), fromAccount.getAccountNumber(), toAccount.getAccountNumber());
-
     }
 }

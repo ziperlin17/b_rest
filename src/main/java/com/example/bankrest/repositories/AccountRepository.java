@@ -15,7 +15,8 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
     Optional<Account> findByUuid(UUID uuid);
     Optional<Account> findByAccountNumber(String accountNumber);
     @Lock(LockModeType.PESSIMISTIC_WRITE)
-    Optional<Account> findWithLockingByUuid(UUID uuid);
+    Optional<Account> findWithLockingById(Long id);
     List<Account> findByUserId(Long userId);
+
 }
 

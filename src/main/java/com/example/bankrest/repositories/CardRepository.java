@@ -3,9 +3,11 @@ package com.example.bankrest.repositories;
 import com.example.bankrest.entities.Card;
 import com.example.bankrest.entities.User;
 import com.example.bankrest.entities.enums.CardStatus;
+import jakarta.persistence.LockModeType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.stereotype.Repository;
 import com.example.bankrest.entities.Account;
 
@@ -21,4 +23,5 @@ public interface CardRepository extends JpaRepository<Card, Long> {
     Optional<Card> findByCardNumber(String cardNumber);
     Page<Card> findByAccount_User_Id(Long userId, Pageable pageable);
     boolean existsByAccountAndStatus(Account account, CardStatus status);
+
 }

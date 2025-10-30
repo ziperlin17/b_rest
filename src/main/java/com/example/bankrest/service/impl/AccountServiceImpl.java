@@ -43,7 +43,7 @@ public class AccountServiceImpl implements AccountService {
         Account newAccount = Account.builder()
                 .accountNumber(accountGenerationService.generateNewAccountNumber())
                 .user(user)
-                .balance(BigDecimal.ZERO)
+                .balance(BigDecimal.valueOf(1000))
                 .currency(Currency.getInstance(createDto.getCurrency().toUpperCase()))
                 .build();
 
@@ -66,7 +66,6 @@ public class AccountServiceImpl implements AccountService {
         Account account = accountRepository.findByUuid(uuid)
                 .orElseThrow(() -> new ResourceNotFoundException("Account not found with UUID: " + uuid));
 
-        // Проверка прав
         if (!account.getUser().getId().equals(userId)) {
             log.warn("IN getAccountByUuid - User {} attempted to access account {} owned by {}", userId, uuid, account.getUser().getId());
             throw new AccessDeniedException("You do not have permission to view this account.");
